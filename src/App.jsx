@@ -9,6 +9,8 @@ import PlayerProfileModal from './components/PlayerProfileModal';
 import Footer from './components/Footer';
 import { INITIAL_MATCHES } from './data/initialMatches';
 import { sound } from './utils/sound';
+import { dbService } from './services/matchesService';
+import { isSupabaseConfigured } from './lib/supabase';
 
 export default function App() {
   // Navigation: 'public' or 'admin'
@@ -40,7 +42,44 @@ export default function App() {
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
   const [selectedPlayerName, setSelectedPlayerName] = useState('loozollo');
 
-  // Sync to local storage
+  // Load from Supabase on start if configured
+  useEffect(() => {
+    if (!isSupabaseConfigured) return;
+
+    let isMounted = true;
+    const initDb = async () => {
+      try {
+        const remoteMatches = await dbService.getMatches();
+        if (!isMounted) return;
+
+        if (remoteMatches && remoteMatches.length > 0) {
+          setMatches(remoteMatches);
+        } else {
+          // If Supabase table is empty, seed with initial matches
+          await dbService.seedIfEmpty(INITIAL_MATCHES);
+        }
+      } catch (err) {
+        console.error('Failed to init Supabase:', err);
+      }
+    };
+
+    initDb();
+
+    // Subscribe to live real-time changes
+    const unsubscribe = dbService.subscribe(async () => {
+      const updated = await dbService.getMatches();
+      if (isMounted && updated) {
+        setMatches(updated);
+      }
+    });
+
+    return () => {
+      isMounted = false;
+      unsubscribe();
+    };
+  }, []);
+
+  // Sync to local storage as fallback cache
   useEffect(() => {
     try {
       localStorage.setItem('h2h_tournament_series_v2', JSON.stringify(matches));
@@ -114,7 +153,8 @@ export default function App() {
   const kamkamaTotalScore = completedMatches.reduce((acc, m) => acc + (Number(m.kamkamaScore) || 0), 0);
 
   // Match mutations from Admin
-  const handleSaveMatch = (savedMatch) => {
+  const handleSaveMatch = async (savedMatch) => {
+    // Optimistic UI update
     setMatches(prev => {
       const exists = prev.some(m => m.id === savedMatch.id);
       if (exists) {
@@ -122,20 +162,36 @@ export default function App() {
       }
       return [savedMatch, ...prev];
     });
+
+    // Save to Supabase if connected
+    if (isSupabaseConfigured) {
+      await dbService.saveMatch(savedMatch);
+    }
   };
 
-  const handleDeleteMatch = (matchId) => {
+  const handleDeleteMatch = async (matchId) => {
     if (window.confirm('ნამდვილად გსურთ მატჩის წაშლა?')) {
       setMatches(prev => prev.filter(m => m.id !== matchId));
+
+      // Delete from Supabase if connected
+      if (isSupabaseConfigured) {
+        await dbService.deleteMatch(matchId);
+      }
     }
   };
 
   const handleImportMatches = (imported) => {
     setMatches(imported);
+    if (isSupabaseConfigured) {
+      imported.forEach(m => dbService.saveMatch(m));
+    }
   };
 
   const handleResetMatches = () => {
     setMatches(INITIAL_MATCHES);
+    if (isSupabaseConfigured) {
+      INITIAL_MATCHES.forEach(m => dbService.saveMatch(m));
+    }
   };
 
   const handleClearMatches = () => {
@@ -153,6 +209,7 @@ export default function App() {
     return (
       <AdminPanel
         matches={matches}
+        isSupabaseConnected={isSupabaseConfigured}
         onSaveMatch={handleSaveMatch}
         onDeleteMatch={handleDeleteMatch}
         onBackToSite={navigateToPublic}

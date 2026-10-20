@@ -24,6 +24,7 @@ import { GAME_CATEGORIES } from '../data/initialMatches';
 
 export default function AdminPanel({
   matches,
+  isSupabaseConnected = false,
   onSaveMatch,
   onDeleteMatch,
   onBackToSite,
@@ -235,7 +236,17 @@ export default function AdminPanel({
             </div>
           </div>
 
-          <div className="flex items-center gap-2 self-start sm:self-auto">
+          <div className="flex flex-wrap items-center gap-2 self-start sm:self-auto">
+            {isSupabaseConnected ? (
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[11px] font-bold">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                Supabase Live
+              </span>
+            ) : (
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-slate-950 border border-slate-800 text-slate-400 text-[11px] font-medium" title="მონაცემები ამჟამად ინახება ლოკალურად">
+                LocalStorage Mode
+              </span>
+            )}
             <span className="px-2.5 sm:px-3 py-1 rounded-xl bg-slate-950 border border-slate-800 text-[11px] sm:text-xs font-bold text-amber-400">
               ⏳ {upcomingList.length} დაგეგმილი
             </span>
