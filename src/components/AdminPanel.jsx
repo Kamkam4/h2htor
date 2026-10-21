@@ -49,8 +49,8 @@ export default function AdminPanel({
 
   // Finish match modal state
   const [finishingMatch, setFinishingMatch] = useState(null);
-  const [finishLoozolloScore, setFinishLoozolloScore] = useState(20);
-  const [finishKamkamaScore, setFinishKamkamaScore] = useState(18);
+  const [finishLoozolloScore, setFinishLoozolloScore] = useState(0);
+  const [finishKamkamaScore, setFinishKamkamaScore] = useState(0);
   const [finishMvp, setFinishMvp] = useState('');
   const [finishNotes, setFinishNotes] = useState('');
 
@@ -505,6 +505,31 @@ export default function AdminPanel({
                   </div>
 
                 </div>
+
+                {/* Live Winner Indicator */}
+                <div className="mt-3 pt-3 border-t border-slate-800/80">
+                  {Number(loozolloScore) > Number(kamkamaScore) ? (
+                    <div className="py-2 px-3 rounded-xl bg-cyan-500/10 border border-cyan-500/30 text-center flex items-center justify-center gap-2">
+                      <Trophy className="w-4 h-4 text-cyan-400 shrink-0" />
+                      <span className="text-xs font-bold text-slate-300">გამარჯვებული:</span>
+                      <span className="text-xs font-black uppercase tracking-wider text-cyan-400">
+                        loozollo (+{Number(loozolloScore) - Number(kamkamaScore)})
+                      </span>
+                    </div>
+                  ) : Number(kamkamaScore) > Number(loozolloScore) ? (
+                    <div className="py-2 px-3 rounded-xl bg-rose-500/10 border border-rose-500/30 text-center flex items-center justify-center gap-2">
+                      <Trophy className="w-4 h-4 text-rose-400 shrink-0" />
+                      <span className="text-xs font-bold text-slate-300">გამარჯვებული:</span>
+                      <span className="text-xs font-black uppercase tracking-wider text-rose-400">
+                        kamkama (+{Number(kamkamaScore) - Number(loozolloScore)})
+                      </span>
+                    </div>
+                  ) : (
+                    <div className="py-2 px-3 rounded-xl bg-slate-800/60 border border-slate-700/60 text-center flex items-center justify-center gap-2 text-slate-400 text-xs font-bold">
+                      ⚖️ ანგარიში თანაბარია (ფრე)
+                    </div>
+                  )}
+                </div>
               </div>
             )}
 
@@ -610,8 +635,8 @@ export default function AdminPanel({
                       onClick={() => {
                         sound.playClick();
                         setFinishingMatch(m);
-                        setFinishLoozolloScore(20);
-                        setFinishKamkamaScore(18);
+                        setFinishLoozolloScore(0);
+                        setFinishKamkamaScore(0);
                         setFinishMvp('');
                         setFinishNotes(m.notes || '');
                       }}
@@ -778,27 +803,88 @@ export default function AdminPanel({
                 </span>
 
                 <div className="flex items-center justify-around gap-4">
+                  {/* loozollo */}
                   <div className="flex flex-col items-center">
                     <span className="text-xs font-black text-cyan-400 uppercase mb-1">loozollo</span>
-                    <input
-                      type="number"
-                      min="0"
-                      value={finishLoozolloScore}
-                      onChange={(e) => setFinishLoozolloScore(Math.max(0, parseInt(e.target.value) || 0))}
-                      className="w-16 text-center py-1.5 text-2xl font-black font-display bg-slate-900 border border-cyan-500/40 rounded-xl text-cyan-400 focus:outline-none"
-                    />
+                    <div className="flex items-center gap-1.5">
+                      <button
+                        type="button"
+                        onClick={() => setFinishLoozolloScore(Math.max(0, finishLoozolloScore - 1))}
+                        className="p-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300"
+                      >
+                        <Minus className="w-3.5 h-3.5" />
+                      </button>
+                      <input
+                        type="number"
+                        min="0"
+                        value={finishLoozolloScore}
+                        onChange={(e) => setFinishLoozolloScore(Math.max(0, parseInt(e.target.value) || 0))}
+                        className="w-16 text-center py-1.5 text-2xl font-black font-display bg-slate-900 border border-cyan-500/40 rounded-xl text-cyan-400 focus:outline-none"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setFinishLoozolloScore(finishLoozolloScore + 1)}
+                        className="p-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300"
+                      >
+                        <Plus className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
                   </div>
+
                   <span className="text-2xl font-black text-slate-600">:</span>
+
+                  {/* kamkama */}
                   <div className="flex flex-col items-center">
                     <span className="text-xs font-black text-rose-400 uppercase mb-1">kamkama</span>
-                    <input
-                      type="number"
-                      min="0"
-                      value={finishKamkamaScore}
-                      onChange={(e) => setFinishKamkamaScore(Math.max(0, parseInt(e.target.value) || 0))}
-                      className="w-16 text-center py-1.5 text-2xl font-black font-display bg-slate-900 border border-rose-500/40 rounded-xl text-rose-400 focus:outline-none"
-                    />
+                    <div className="flex items-center gap-1.5">
+                      <button
+                        type="button"
+                        onClick={() => setFinishKamkamaScore(Math.max(0, finishKamkamaScore - 1))}
+                        className="p-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300"
+                      >
+                        <Minus className="w-3.5 h-3.5" />
+                      </button>
+                      <input
+                        type="number"
+                        min="0"
+                        value={finishKamkamaScore}
+                        onChange={(e) => setFinishKamkamaScore(Math.max(0, parseInt(e.target.value) || 0))}
+                        className="w-16 text-center py-1.5 text-2xl font-black font-display bg-slate-900 border border-rose-500/40 rounded-xl text-rose-400 focus:outline-none"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setFinishKamkamaScore(finishKamkamaScore + 1)}
+                        className="p-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300"
+                      >
+                        <Plus className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
                   </div>
+                </div>
+
+                {/* Modal Live Winner Indicator */}
+                <div className="mt-3 pt-3 border-t border-slate-800/80">
+                  {Number(finishLoozolloScore) > Number(finishKamkamaScore) ? (
+                    <div className="py-2 px-3 rounded-xl bg-cyan-500/10 border border-cyan-500/30 text-center flex items-center justify-center gap-2">
+                      <Trophy className="w-4 h-4 text-cyan-400 shrink-0" />
+                      <span className="text-xs font-bold text-slate-300">გამარჯვებული:</span>
+                      <span className="text-xs font-black uppercase tracking-wider text-cyan-400">
+                        loozollo (+{Number(finishLoozolloScore) - Number(finishKamkamaScore)})
+                      </span>
+                    </div>
+                  ) : Number(finishKamkamaScore) > Number(finishLoozolloScore) ? (
+                    <div className="py-2 px-3 rounded-xl bg-rose-500/10 border border-rose-500/30 text-center flex items-center justify-center gap-2">
+                      <Trophy className="w-4 h-4 text-rose-400 shrink-0" />
+                      <span className="text-xs font-bold text-slate-300">გამარჯვებული:</span>
+                      <span className="text-xs font-black uppercase tracking-wider text-rose-400">
+                        kamkama (+{Number(finishKamkamaScore) - Number(finishLoozolloScore)})
+                      </span>
+                    </div>
+                  ) : (
+                    <div className="py-2 px-3 rounded-xl bg-slate-800/60 border border-slate-700/60 text-center flex items-center justify-center gap-2 text-slate-400 text-xs font-bold">
+                      ⚖️ ანგარიში თანაბარია (ფრე)
+                    </div>
+                  )}
                 </div>
               </div>
 
@@ -806,7 +892,11 @@ export default function AdminPanel({
                 <label className="block text-xs font-bold uppercase text-slate-400 mb-1">მატჩის MVP</label>
                 <input
                   type="text"
-                  placeholder="მაგ: loozollo"
+                  placeholder={
+                    Number(finishKamkamaScore) > Number(finishLoozolloScore)
+                      ? "მაგ: kamkama"
+                      : "მაგ: loozollo"
+                  }
                   value={finishMvp}
                   onChange={(e) => setFinishMvp(e.target.value)}
                   className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-xs text-white"

@@ -273,10 +273,10 @@ export default function MatchList({
                     <div className="flex items-center gap-2 sm:gap-3 flex-1 min-w-0">
                       <div className={`w-7 h-7 sm:w-8 sm:h-8 rounded-lg flex items-center justify-center font-black text-xs shrink-0 ${
                         isLoozolloWin 
-                          ? 'bg-cyan-500 text-slate-950 shadow-md shadow-cyan-500/20' 
-                          : 'bg-slate-800 text-slate-400'
+                          ? 'bg-gradient-to-tr from-cyan-500 to-blue-600 text-slate-950 shadow-md shadow-cyan-500/20' 
+                          : 'bg-slate-800/80 text-cyan-400 border border-slate-700/60'
                       }`}>
-                        {isLoozolloWin ? <Trophy className="w-3.5 h-3.5 fill-slate-950" /> : "L"}
+                        {isLoozolloWin ? <Trophy className="w-3.5 h-3.5 fill-slate-950 text-slate-950" /> : "⚡"}
                       </div>
                       <div className="min-w-0">
                         <span className={`text-xs sm:text-sm font-extrabold truncate block ${
@@ -285,8 +285,8 @@ export default function MatchList({
                           loozollo
                         </span>
                         {isLoozolloWin && (
-                          <span className="text-[9px] sm:text-[10px] font-black uppercase tracking-wider text-cyan-400/90 block truncate">
-                            WINNER
+                          <span className="text-[9px] sm:text-[10px] font-black uppercase tracking-wider text-cyan-400 block truncate">
+                            🏆 WINNER
                           </span>
                         )}
                       </div>
@@ -316,17 +316,17 @@ export default function MatchList({
                           kamkama
                         </span>
                         {isKamkamaWin && (
-                          <span className="text-[9px] sm:text-[10px] font-black uppercase tracking-wider text-rose-400/90 block truncate">
-                            WINNER
+                          <span className="text-[9px] sm:text-[10px] font-black uppercase tracking-wider text-rose-400 block truncate">
+                            🏆 WINNER
                           </span>
                         )}
                       </div>
                       <div className={`w-7 h-7 sm:w-8 sm:h-8 rounded-lg flex items-center justify-center font-black text-xs shrink-0 ${
                         isKamkamaWin 
-                          ? 'bg-rose-500 text-white shadow-md shadow-rose-500/20' 
-                          : 'bg-slate-800 text-slate-400'
+                          ? 'bg-gradient-to-tr from-rose-500 to-amber-600 text-white shadow-md shadow-rose-500/20' 
+                          : 'bg-slate-800/80 text-rose-400 border border-slate-700/60'
                       }`}>
-                        {isKamkamaWin ? <Trophy className="w-3.5 h-3.5 fill-white" /> : "K"}
+                        {isKamkamaWin ? <Trophy className="w-3.5 h-3.5 fill-white text-white" /> : "🔥"}
                       </div>
                     </div>
 
